@@ -4,12 +4,14 @@
   pre_tasks:
 
   - name: install updates for fedora
+    tags: always
     ansible.builtin.dnf:
       update_only: yes
       update_cache: yes
     when: ansible_distribution == "Fedora"
 
   - name: install updates for Ubuntu
+    tags: always
     ansible.builtin.apt:
       upgrade: dist
       update_cache: yes
@@ -20,13 +22,25 @@
   tasks:
 
   - name: install apache on websersers
+    tags: apache,ubuntu
     ansible.builtin.apt:
       name:
         - apache2
         - libapache2-mod-php
     when: ansible_distribution == "Ubuntu"
 
+  - name: copy html files to site
+    tags: apache,ubuntu
+    ansible.builtin.copy: 
+      src: default_site.html
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 0644
+
+
 - hosts: db_servers
+  tags: db,fedora
   become: true
   tasks:
 
